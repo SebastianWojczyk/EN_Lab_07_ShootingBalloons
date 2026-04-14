@@ -14,11 +14,14 @@ namespace ShootingBalloons
     {
         List<Circle> balloons = new List<Circle>();
         Timer timerBalloonGenerate;
+        Timer timerMoving;
         Random random = new Random();
 
         public Form1()
         {
             InitializeComponent();
+
+            DoubleBuffered = true;
 
             this.Paint += Form1_Paint;
 
@@ -26,6 +29,20 @@ namespace ShootingBalloons
             timerBalloonGenerate.Interval = 1000;
             timerBalloonGenerate.Tick += TimerBalloonGenerate_Tick;
             timerBalloonGenerate.Start();
+
+            timerMoving = new Timer();
+            timerMoving.Interval = 30;
+            timerMoving.Tick += TimerMoving_Tick;
+            timerMoving.Start();
+        }
+
+        private void TimerMoving_Tick(object sender, EventArgs e)
+        {
+            foreach (Circle c in balloons)
+            {
+                c.Move();
+            }
+            Invalidate();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -53,13 +70,13 @@ namespace ShootingBalloons
             int directionX;
             if(LeftToRight)
             {
-                positionX = 0;
-                directionX = 1;
+                positionX = -50;
+                directionX = random.Next(1,3);
             }
             else
             {
-                positionX = this.ClientSize.Width-50;
-                directionX = -1;
+                positionX = this.ClientSize.Width;
+                directionX = -random.Next(1, 3);
             }
 
             balloons.Add(new Circle(random.Next(20, 50),
