@@ -60,13 +60,26 @@ namespace ShootingBalloons
 
         private void TimerMoving_Tick(object sender, EventArgs e)
         {
-            foreach (Circle c in balloons)
+            foreach (Circle balloon in balloons)
             {
-                c.Move();
+                balloon.Move();
             }
-            foreach (Circle c in bullets)
+            foreach (Circle bullet in bullets)
             {
-                c.Move();
+                bullet.Move();
+                foreach (Circle balloon in balloons)
+                {
+                    double distance = Math.Sqrt(Math.Pow(balloon.Position.X - bullet.Position.X, 2) +
+                        Math.Pow(balloon.Position.Y - bullet.Position.Y, 2));
+
+                    if (distance < balloon.Size / 2 + bullet.Size / 2)
+                    {
+                        balloons.Remove(balloon);
+                        bullets.Remove(bullet);
+                        Invalidate();
+                        return;
+                    }
+                }
             }
             Invalidate();
         }
