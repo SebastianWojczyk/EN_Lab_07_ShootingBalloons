@@ -16,6 +16,7 @@ namespace ShootingBalloons
         Timer timerBalloonGenerate;
         Timer timerMoving;
         Random random = new Random();
+        Point mouseLocation;
 
         public Form1()
         {
@@ -24,6 +25,7 @@ namespace ShootingBalloons
             DoubleBuffered = true;
 
             this.Paint += Form1_Paint;
+            this.MouseMove += Form1_MouseMove;
 
             timerBalloonGenerate = new Timer();
             timerBalloonGenerate.Interval = 1000;
@@ -34,6 +36,12 @@ namespace ShootingBalloons
             timerMoving.Interval = 30;
             timerMoving.Tick += TimerMoving_Tick;
             timerMoving.Start();
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            mouseLocation = e.Location;
+            Invalidate();
         }
 
         private void TimerMoving_Tick(object sender, EventArgs e)
@@ -61,6 +69,11 @@ namespace ShootingBalloons
                                                    c.Size,
                                                    c.Size);
             }
+            e.Graphics.DrawLine(Pens.Black,
+                                this.ClientSize.Width/2, 
+                                this.ClientSize.Height, 
+                                mouseLocation.X, 
+                                mouseLocation.Y);
         }
 
         private void TimerBalloonGenerate_Tick(object sender, EventArgs e)
