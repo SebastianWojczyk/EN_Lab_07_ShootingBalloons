@@ -12,9 +12,60 @@ namespace ShootingBalloons
 {
     public partial class Form1 : Form
     {
+        List<Circle> balloons = new List<Circle>();
+        Timer timerBalloonGenerate;
+        Random random = new Random();
+
         public Form1()
         {
             InitializeComponent();
+
+            this.Paint += Form1_Paint;
+
+            timerBalloonGenerate = new Timer();
+            timerBalloonGenerate.Interval = 1000;
+            timerBalloonGenerate.Tick += TimerBalloonGenerate_Tick;
+            timerBalloonGenerate.Start();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.Clear(Color.Red);
+
+            foreach (Circle c in balloons)
+            {
+
+                e.Graphics.FillEllipse(Brushes.Green, c.Position.X,
+                                                   c.Position.Y,
+                                                   c.Size,
+                                                   c.Size);
+                e.Graphics.DrawEllipse(Pens.Black, c.Position.X,
+                                                   c.Position.Y,
+                                                   c.Size,
+                                                   c.Size);
+            }
+        }
+
+        private void TimerBalloonGenerate_Tick(object sender, EventArgs e)
+        {
+            bool LeftToRight = random.Next()%2==0 ? true : false;
+            int positionX;
+            int directionX;
+            if(LeftToRight)
+            {
+                positionX = 0;
+                directionX = 1;
+            }
+            else
+            {
+                positionX = this.ClientSize.Width-50;
+                directionX = -1;
+            }
+
+            balloons.Add(new Circle(random.Next(20, 50),
+                                    new Point(positionX, random.Next(0, 100)),
+                                    new Point(directionX, 0) ));
+            Invalidate();
         }
     }
 }
