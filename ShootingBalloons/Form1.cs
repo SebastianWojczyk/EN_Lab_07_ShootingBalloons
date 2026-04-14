@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +13,7 @@ namespace ShootingBalloons
     public partial class Form1 : Form
     {
         List<Circle> balloons = new List<Circle>();
+        List<Circle> bullets = new List<Circle>();
         Timer timerBalloonGenerate;
         Timer timerMoving;
         Random random = new Random();
@@ -26,6 +27,7 @@ namespace ShootingBalloons
 
             this.Paint += Form1_Paint;
             this.MouseMove += Form1_MouseMove;
+            this.MouseDown += Form1_MouseDown;
 
             timerBalloonGenerate = new Timer();
             timerBalloonGenerate.Interval = 1000;
@@ -38,6 +40,18 @@ namespace ShootingBalloons
             timerMoving.Start();
         }
 
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            Point bulletPosition = new Point(this.ClientSize.Width / 2 - 10,
+                                             this.ClientSize.Height - 10);
+
+            Point bulletDirection = new Point((mouseLocation.X - this.ClientSize.Width / 2) / 10,
+                                              (mouseLocation.Y - this.ClientSize.Height) / 10);
+            bullets.Add(new Circle(20,
+                                   bulletPosition,
+                                   bulletDirection));
+        }
+
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
             mouseLocation = e.Location;
@@ -47,6 +61,10 @@ namespace ShootingBalloons
         private void TimerMoving_Tick(object sender, EventArgs e)
         {
             foreach (Circle c in balloons)
+            {
+                c.Move();
+            }
+            foreach (Circle c in bullets)
             {
                 c.Move();
             }
@@ -69,22 +87,31 @@ namespace ShootingBalloons
                                                    c.Size,
                                                    c.Size);
             }
+            foreach (Circle c in bullets)
+            {
+
+                e.Graphics.FillEllipse(Brushes.Black, c.Position.X,
+                                                      c.Position.Y,
+                                                      c.Size,
+                                                      c.Size);
+
+            }
             e.Graphics.DrawLine(Pens.Black,
-                                this.ClientSize.Width/2, 
-                                this.ClientSize.Height, 
-                                mouseLocation.X, 
+                                this.ClientSize.Width / 2,
+                                this.ClientSize.Height,
+                                mouseLocation.X,
                                 mouseLocation.Y);
         }
 
         private void TimerBalloonGenerate_Tick(object sender, EventArgs e)
         {
-            bool LeftToRight = random.Next()%2==0 ? true : false;
+            bool LeftToRight = random.Next() % 2 == 0 ? true : false;
             int positionX;
             int directionX;
-            if(LeftToRight)
+            if (LeftToRight)
             {
                 positionX = -50;
-                directionX = random.Next(1,3);
+                directionX = random.Next(1, 3);
             }
             else
             {
@@ -94,7 +121,7 @@ namespace ShootingBalloons
 
             balloons.Add(new Circle(random.Next(20, 50),
                                     new Point(positionX, random.Next(0, 100)),
-                                    new Point(directionX, 0) ));
+                                    new Point(directionX, 0)));
             Invalidate();
         }
     }
